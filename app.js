@@ -1,11 +1,7 @@
+var btn_edit = document.getElementById('btn_add');
+var btn_name = document.getElementById('obj_name');
 $(document).ready(function(){
     
-    let obj_edit = false;
-    $(document).on('click','.obj_name', function(e){
-        
-        obj_edit = true;
-        e.preventDefault();
-    });
     getObjs();
     //Función para obtener la lista de objetos de la base de datos
     function getObjs(){
@@ -19,7 +15,7 @@ $(document).ready(function(){
                     template += `
                         <tr objId="${objs_pack.id}">
                             <td>${objs_pack.id}</td>
-                            <td><a href="#" class="obj_name">${objs_pack.name}</a></td>
+                            <td><a class="btn_name" id="btn_name" type="button">${objs_pack.name}</a></td>
                             <td>${objs_pack.desc}</td>
                             <td>${objs_pack.cant}</td>
                             <td>${objs_pack.date}</td>
@@ -31,29 +27,41 @@ $(document).ready(function(){
             }
         });
     }
+
     //Función para subir objetos a la base de datos
-    if(obj_edit = false){
-        $('#obj-form').submit(function (e) {
-            const postData = {
-                name : $('#name').val(),
-                desc : $('#desc').val(),
-                cant : $('#cant').val(),
-                date : $('#date').val()
-            };
-            $.post('obj_submit.php', postData, function(response){
-                console.log(response);
-                getObjs();
-                
-            });
-            e.preventDefault();
-            $('#obj-form').trigger('reset');
+    $('#obj-form').submit(function (e) {
+        const postData = {
+            name : $('#name').val(),
+            desc : $('#desc').val(),
+            cant : $('#cant').val(),
+            date : $('#date').val()
+        };
+        $.post('obj_submit.php', postData, function(response){
+            console.log(response);
+            getObjs();
             
         });
-    };
-    if(obj_edit){
-        var $text = "Editar";
-        $('#btn_Add').val($text)
-    };
+        e.preventDefault();
+        $('#obj-form').trigger('reset');
+        
+    });
+    //Para editar un registro :3
+    $(document).on('click','.btn_name',(e) =>{
+        const element = $(this)[0].activeElement.parentElement.parentElement;
+        console.log(element)
+        const id = $(element).attr('objId');
+        $.post('obj_row.php', {id}, (response) =>{
+            const row = JSON.parse(response);
+            $('#name').val(row.name);
+            $('#desc').val(row.desc);
+            $('#cant').val(row.cant);
+            $('#date').val(row.date);
+        });
+        btn_edit.innerHTML = 'Editar';
+        btn_edit.classList.add("btn-primary");
+        btn_edit.classList.remove("btn-success");
+        e.preventDefault();
+    });
     $(document).on('click','.delete', function(){
         $('#obj-form').trigger('reset');
     });

@@ -1,5 +1,5 @@
---CREATE DATABASE db_inventario;
---USE db_inventario;
+CREATE DATABASE db_inventario;
+USE db_inventario;
 
 CREATE TABLE tb_objetos(
     id integer primary key,
